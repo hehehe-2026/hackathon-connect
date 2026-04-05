@@ -14,7 +14,185 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      hackathons: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deadline: string
+          description: string
+          end_date: string
+          id: string
+          interested_count: number
+          mode: Database["public"]["Enums"]["hackathon_mode"]
+          organization: string
+          poster_url: string
+          prize: string
+          registration_link: string
+          start_date: string
+          status: Database["public"]["Enums"]["hackathon_status"]
+          title: string
+          venue: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deadline: string
+          description?: string
+          end_date: string
+          id?: string
+          interested_count?: number
+          mode?: Database["public"]["Enums"]["hackathon_mode"]
+          organization: string
+          poster_url?: string
+          prize?: string
+          registration_link?: string
+          start_date: string
+          status?: Database["public"]["Enums"]["hackathon_status"]
+          title: string
+          venue?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deadline?: string
+          description?: string
+          end_date?: string
+          id?: string
+          interested_count?: number
+          mode?: Database["public"]["Enums"]["hackathon_mode"]
+          organization?: string
+          poster_url?: string
+          prize?: string
+          registration_link?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["hackathon_status"]
+          title?: string
+          venue?: string
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          created_at: string
+          from_user: string
+          id: string
+          to_user: string
+        }
+        Insert: {
+          created_at?: string
+          from_user: string
+          id?: string
+          to_user: string
+        }
+        Update: {
+          created_at?: string
+          from_user?: string
+          id?: string
+          to_user?: string
+        }
+        Relationships: []
+      }
+      matches: {
+        Row: {
+          created_at: string
+          id: string
+          user1: string
+          user2: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user1: string
+          user2: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user1?: string
+          user2?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          sender_id: string
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          sender_id: string
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          sender_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string
+          bio: string
+          college: string
+          created_at: string
+          email: string | null
+          experience_level: Database["public"]["Enums"]["experience_level"]
+          github_link: string
+          id: string
+          last_updated: string
+          name: string
+          preferred_role: string
+          skills: string[]
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string
+          bio?: string
+          college?: string
+          created_at?: string
+          email?: string | null
+          experience_level?: Database["public"]["Enums"]["experience_level"]
+          github_link?: string
+          id?: string
+          last_updated?: string
+          name?: string
+          preferred_role?: string
+          skills?: string[]
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string
+          bio?: string
+          college?: string
+          created_at?: string
+          email?: string | null
+          experience_level?: Database["public"]["Enums"]["experience_level"]
+          github_link?: string
+          id?: string
+          last_updated?: string
+          name?: string
+          preferred_role?: string
+          skills?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +201,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      experience_level: "beginner" | "intermediate" | "advanced"
+      hackathon_mode: "online" | "offline" | "hybrid"
+      hackathon_status: "upcoming" | "ongoing" | "ended"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +330,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      experience_level: ["beginner", "intermediate", "advanced"],
+      hackathon_mode: ["online", "offline", "hybrid"],
+      hackathon_status: ["upcoming", "ongoing", "ended"],
+    },
   },
 } as const
