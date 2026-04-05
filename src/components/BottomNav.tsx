@@ -27,7 +27,7 @@ const BottomNav = () => {
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <tab.icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_hsl(199_89%_48%/0.5)]" : ""}`} />
+              <tab.icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_hsl(307_63%_48%/0.5)]" : ""}`} />
               <span className="text-xs font-medium">{tab.label}</span>
               {isActive && (
                 <div className="w-1 h-1 rounded-full bg-primary animate-scale-in" />
