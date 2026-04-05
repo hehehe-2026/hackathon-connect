@@ -15,7 +15,7 @@ const Profile = () => {
     bio: "Passionate developer looking for hackathon teammates!",
     skills: ["React", "TypeScript", "Node.js"],
     preferredRole: "Full Stack Developer",
-    experienceLevel: "intermediate" as const,
+    experienceLevel: "intermediate" as "beginner" | "intermediate" | "advanced",
     githubLink: "https://github.com/yourusername",
   });
   const [newSkill, setNewSkill] = useState("");
