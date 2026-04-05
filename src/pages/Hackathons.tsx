@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import HackathonCard from "@/components/HackathonCard";
 import HackathonForm from "@/components/HackathonForm";
-import { mockHackathons } from "@/data/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const modeFilters = ["all", "online", "offline", "hybrid"] as const;
 const statusFilters = ["all", "upcoming", "ongoing"] as const;
@@ -14,7 +15,19 @@ const Hackathons = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
 
-  const filtered = mockHackathons
+  const { data: hackathons = [] } = useQuery({
+    queryKey: ["hackathons"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("hackathons")
+        .select("*")
+        .order("start_date", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const filtered = hackathons
     .filter((h) => modeFilter === "all" || h.mode === modeFilter)
     .filter((h) => statusFilter === "all" || h.status === statusFilter);
 
@@ -34,26 +47,14 @@ const Hackathons = () => {
 
       <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
         {modeFilters.map((m) => (
-          <Badge
-            key={m}
-            className={`cursor-pointer capitalize text-xs whitespace-nowrap transition-all ${
-              modeFilter === m ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-            }`}
-            onClick={() => setModeFilter(m)}
-          >
+          <Badge key={m} className={`cursor-pointer capitalize text-xs whitespace-nowrap transition-all ${modeFilter === m ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`} onClick={() => setModeFilter(m)}>
             {m}
           </Badge>
         ))}
       </div>
       <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
         {statusFilters.map((s) => (
-          <Badge
-            key={s}
-            className={`cursor-pointer capitalize text-xs whitespace-nowrap transition-all ${
-              statusFilter === s ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-            }`}
-            onClick={() => setStatusFilter(s)}
-          >
+          <Badge key={s} className={`cursor-pointer capitalize text-xs whitespace-nowrap transition-all ${statusFilter === s ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`} onClick={() => setStatusFilter(s)}>
             {s}
           </Badge>
         ))}
