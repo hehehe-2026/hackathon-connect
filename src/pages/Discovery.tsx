@@ -97,7 +97,6 @@ const Discovery = () => {
       .filter((p) => !showLikedYou || likesReceived.includes(p.user_id));
   }, [profiles, likesSent, passedProfiles, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
 
-  const [passedProfiles, setPassedProfiles] = useState<string[]>([]);
 
   const handleLike = (userId: string) => likeMutation.mutate(userId);
   const handlePass = (userId: string) => {
