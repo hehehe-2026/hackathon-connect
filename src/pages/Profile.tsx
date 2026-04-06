@@ -71,6 +71,27 @@ const Profile = () => {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      await supabase.auth.signOut();
+    },
+    onSuccess: () => {
+      toast.success("Account deleted.");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete your profile? This action cannot be undone.")) {
+      deleteMutation.mutate();
+    }
+  };
+
   const update = (key: string, value: string) => setForm((p) => ({ ...p, [key]: value }));
 
   const addSkill = () => {
