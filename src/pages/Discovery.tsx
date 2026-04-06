@@ -94,7 +94,7 @@ const Discovery = () => {
       .filter((p) => !selectedRole || p.preferred_role === selectedRole)
       .filter((p) => !selectedLevel || p.experience_level === selectedLevel)
       .filter((p) => !showLikedYou || likesReceived.includes(p.user_id));
-  }, [profiles, likesSent, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
+  }, [profiles, likesSent, passedProfiles, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
 
   const [passedProfiles, setPassedProfiles] = useState<string[]>([]);
 
