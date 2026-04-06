@@ -20,6 +20,7 @@ const Discovery = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   const [showLikedYou, setShowLikedYou] = useState(false);
+  const [passedProfiles, setPassedProfiles] = useState<string[]>([]);
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles"],
