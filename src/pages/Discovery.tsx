@@ -89,6 +89,7 @@ const Discovery = () => {
   const filteredProfiles = useMemo(() => {
     return profiles
       .filter((p) => !likesSent.includes(p.user_id))
+      .filter((p) => !passedProfiles.includes(p.user_id))
       .filter((p) => !selectedSkills.length || p.skills.some((s) => selectedSkills.includes(s)))
       .filter((p) => !selectedRole || p.preferred_role === selectedRole)
       .filter((p) => !selectedLevel || p.experience_level === selectedLevel)
