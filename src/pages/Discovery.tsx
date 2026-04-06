@@ -20,6 +20,7 @@ const Discovery = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   const [showLikedYou, setShowLikedYou] = useState(false);
+  const [passedProfiles, setPassedProfiles] = useState<string[]>([]);
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles"],
@@ -89,14 +90,18 @@ const Discovery = () => {
   const filteredProfiles = useMemo(() => {
     return profiles
       .filter((p) => !likesSent.includes(p.user_id))
+      .filter((p) => !passedProfiles.includes(p.user_id))
       .filter((p) => !selectedSkills.length || p.skills.some((s) => selectedSkills.includes(s)))
       .filter((p) => !selectedRole || p.preferred_role === selectedRole)
       .filter((p) => !selectedLevel || p.experience_level === selectedLevel)
       .filter((p) => !showLikedYou || likesReceived.includes(p.user_id));
-  }, [profiles, likesSent, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
+  }, [profiles, likesSent, passedProfiles, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
+
 
   const handleLike = (userId: string) => likeMutation.mutate(userId);
-  const handlePass = (_userId: string) => {};
+  const handlePass = (userId: string) => {
+    setPassedProfiles((prev) => [...prev, userId]);
+  };
 
   return (
     <div className="pb-24 pt-2">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Github, Save, X, Plus, LogOut } from "lucide-react";
+import { Github, Save, X, Plus, LogOut, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -70,6 +70,27 @@ const Profile = () => {
     },
     onError: (err: Error) => toast.error(err.message),
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      await supabase.auth.signOut();
+    },
+    onSuccess: () => {
+      toast.success("Account deleted.");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete your profile? This action cannot be undone.")) {
+      deleteMutation.mutate();
+    }
+  };
 
   const update = (key: string, value: string) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -204,6 +225,17 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      <Button
+        variant="destructive"
+        size="sm"
+        className="w-full rounded-xl mt-4"
+        onClick={handleDelete}
+        disabled={deleteMutation.isPending}
+      >
+        {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Trash2 className="w-4 h-4 mr-1" />}
+        Delete Account
+      </Button>
     </div>
   );
 };
