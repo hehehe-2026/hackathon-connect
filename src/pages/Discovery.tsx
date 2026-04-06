@@ -95,8 +95,12 @@ const Discovery = () => {
       .filter((p) => !showLikedYou || likesReceived.includes(p.user_id));
   }, [profiles, likesSent, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
 
+  const [passedProfiles, setPassedProfiles] = useState<string[]>([]);
+
   const handleLike = (userId: string) => likeMutation.mutate(userId);
-  const handlePass = (_userId: string) => {};
+  const handlePass = (userId: string) => {
+    setPassedProfiles((prev) => [...prev, userId]);
+  };
 
   return (
     <div className="pb-24 pt-2">
