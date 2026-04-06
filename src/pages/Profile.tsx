@@ -225,6 +225,17 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      <Button
+        variant="destructive"
+        size="sm"
+        className="w-full rounded-xl mt-4"
+        onClick={handleDelete}
+        disabled={deleteMutation.isPending}
+      >
+        {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Trash2 className="w-4 h-4 mr-1" />}
+        Delete Account
+      </Button>
     </div>
   );
 };
