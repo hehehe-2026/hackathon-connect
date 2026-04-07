@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,14 +7,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ChatWindowProps {
   match: Tables<"matches">;
   otherUser: Tables<"profiles">;
   onBack: () => void;
+  onUnmatch?: () => void;
 }
 
-const ChatWindow = ({ match, otherUser, onBack }: ChatWindowProps) => {
+const ChatWindow = ({ match, otherUser, onBack, onUnmatch }: ChatWindowProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [input, setInput] = useState("");
@@ -67,10 +79,33 @@ const ChatWindow = ({ match, otherUser, onBack }: ChatWindowProps) => {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <img src={avatarUrl} alt={otherUser.name} className="w-10 h-10 rounded-xl bg-secondary" />
-        <div>
+        <div className="flex-1">
           <h3 className="font-display font-semibold text-foreground">{otherUser.name}</h3>
           <p className="text-xs text-muted-foreground">{otherUser.preferred_role}</p>
         </div>
+        {onUnmatch && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-xl text-destructive">
+                <UserX className="w-5 h-5" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Unmatch {otherUser.name}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will remove the match and delete all chat messages. This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={onUnmatch}>
+                  Unmatch
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto py-4 space-y-3">
