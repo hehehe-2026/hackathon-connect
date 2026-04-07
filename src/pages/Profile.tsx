@@ -181,10 +181,17 @@ const Profile = () => {
               ))}
             </div>
             {editing && (
-              <div className="flex gap-2 mt-2">
-                <Input value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Add skill..." className="rounded-xl bg-secondary border-border text-sm flex-1" />
-                <Button size="icon" variant="secondary" className="rounded-xl" onClick={addSkill}><Plus className="w-4 h-4" /></Button>
-              </div>
+              <>
+                <div className="flex gap-2 mt-2">
+                  <Input value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Add skill..." className="rounded-xl bg-secondary border-border text-sm flex-1" />
+                  <Button size="icon" variant="secondary" className="rounded-xl" onClick={addSkill}><Plus className="w-4 h-4" /></Button>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {suggestedSkills.filter((s) => !form.skills.some((fs) => fs.toLowerCase() === s.toLowerCase())).slice(0, 10).map((s) => (
+                    <Badge key={s} variant="outline" className="text-xs cursor-pointer hover:bg-primary/20 transition-colors" onClick={() => setForm((p) => ({ ...p, skills: [...p.skills, s] }))}>+ {s}</Badge>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
