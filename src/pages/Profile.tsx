@@ -11,6 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
+const suggestedRoles = ["Full Stack Developer", "Frontend Developer", "Backend Developer", "UI/UX Designer", "ML Engineer", "Mobile Developer", "DevOps Engineer", "Blockchain Developer"];
+const suggestedSkills = ["React", "Node.js", "Python", "TypeScript", "JavaScript", "Java", "C++", "Go", "Rust", "Flutter", "Swift", "Kotlin", "MongoDB", "PostgreSQL", "Firebase", "AWS", "Docker", "Kubernetes", "GraphQL", "TailwindCSS", "Figma", "Git"];
+
 const Profile = () => {
   const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
@@ -178,17 +181,31 @@ const Profile = () => {
               ))}
             </div>
             {editing && (
-              <div className="flex gap-2 mt-2">
-                <Input value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Add skill..." className="rounded-xl bg-secondary border-border text-sm flex-1" />
-                <Button size="icon" variant="secondary" className="rounded-xl" onClick={addSkill}><Plus className="w-4 h-4" /></Button>
-              </div>
+              <>
+                <div className="flex gap-2 mt-2">
+                  <Input value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Add skill..." className="rounded-xl bg-secondary border-border text-sm flex-1" />
+                  <Button size="icon" variant="secondary" className="rounded-xl" onClick={addSkill}><Plus className="w-4 h-4" /></Button>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {suggestedSkills.filter((s) => !form.skills.some((fs) => fs.toLowerCase() === s.toLowerCase())).slice(0, 10).map((s) => (
+                    <Badge key={s} variant="outline" className="text-xs cursor-pointer hover:bg-primary/20 transition-colors" onClick={() => setForm((p) => ({ ...p, skills: [...p.skills, s] }))}>+ {s}</Badge>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
           <div>
             <Label className="text-sm text-muted-foreground">Preferred Role</Label>
             {editing ? (
-              <Input value={form.preferred_role} onChange={(e) => update("preferred_role", e.target.value)} className="mt-1 rounded-xl bg-secondary border-border text-sm" />
+              <>
+                <Input value={form.preferred_role} onChange={(e) => update("preferred_role", e.target.value)} className="mt-1 rounded-xl bg-secondary border-border text-sm" />
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {suggestedRoles.filter((r) => r.toLowerCase() !== form.preferred_role.toLowerCase()).slice(0, 6).map((r) => (
+                    <Badge key={r} variant="outline" className="text-xs cursor-pointer hover:bg-primary/20 transition-colors" onClick={() => update("preferred_role", r)}>+ {r}</Badge>
+                  ))}
+                </div>
+              </>
             ) : (
               <p className="text-sm text-primary font-medium mt-1">{form.preferred_role || "Set your role"}</p>
             )}
