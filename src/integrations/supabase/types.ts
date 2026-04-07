@@ -145,6 +145,27 @@ export type Database = {
           },
         ]
       }
+      passes: {
+        Row: {
+          created_at: string
+          from_user: string
+          id: string
+          to_user: string
+        }
+        Insert: {
+          created_at?: string
+          from_user: string
+          id?: string
+          to_user: string
+        }
+        Update: {
+          created_at?: string
+          from_user?: string
+          id?: string
+          to_user?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string
