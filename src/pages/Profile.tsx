@@ -11,6 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
+const suggestedRoles = ["Full Stack Developer", "Frontend Developer", "Backend Developer", "UI/UX Designer", "ML Engineer", "Mobile Developer", "DevOps Engineer", "Blockchain Developer"];
+const suggestedSkills = ["React", "Node.js", "Python", "TypeScript", "JavaScript", "Java", "C++", "Go", "Rust", "Flutter", "Swift", "Kotlin", "MongoDB", "PostgreSQL", "Firebase", "AWS", "Docker", "Kubernetes", "GraphQL", "TailwindCSS", "Figma", "Git"];
+
 const Profile = () => {
   const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
