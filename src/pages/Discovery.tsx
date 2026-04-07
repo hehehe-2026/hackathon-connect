@@ -20,7 +20,6 @@ const Discovery = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   const [showLikedYou, setShowLikedYou] = useState(false);
-  const [passedProfiles, setPassedProfiles] = useState<string[]>([]);
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
 
   // Swipe gesture state
@@ -70,6 +69,34 @@ const Discovery = () => {
     enabled: !!user,
   });
 
+  // Fetch passes from DB instead of local state
+  const { data: passedUserIds = [] } = useQuery({
+    queryKey: ["passes"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("passes")
+        .select("to_user")
+        .eq("from_user", user!.id);
+      if (error) throw error;
+      return data.map((p) => p.to_user);
+    },
+    enabled: !!user,
+  });
+
+  // Fetch matched user IDs to exclude from discovery
+  const { data: matchedUserIds = [] } = useQuery({
+    queryKey: ["matched-user-ids"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("matches")
+        .select("user1, user2")
+        .or(`user1.eq.${user!.id},user2.eq.${user!.id}`);
+      if (error) throw error;
+      return data.map((m) => (m.user1 === user!.id ? m.user2 : m.user1));
+    },
+    enabled: !!user,
+  });
+
   const likeMutation = useMutation({
     mutationFn: async (toUserId: string) => {
       const { error } = await supabase
@@ -87,6 +114,19 @@ const Discovery = () => {
       }
       queryClient.invalidateQueries({ queryKey: ["likes-sent"] });
       queryClient.invalidateQueries({ queryKey: ["matches"] });
+      queryClient.invalidateQueries({ queryKey: ["matched-user-ids"] });
+    },
+  });
+
+  const passMutation = useMutation({
+    mutationFn: async (toUserId: string) => {
+      const { error } = await supabase
+        .from("passes")
+        .insert({ from_user: user!.id, to_user: toUserId });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["passes"] });
     },
   });
 
@@ -98,12 +138,13 @@ const Discovery = () => {
   const filteredProfiles = useMemo(() => {
     return profiles
       .filter((p) => !likesSent.includes(p.user_id))
-      .filter((p) => !passedProfiles.includes(p.user_id))
+      .filter((p) => !passedUserIds.includes(p.user_id))
+      .filter((p) => !matchedUserIds.includes(p.user_id))
       .filter((p) => !selectedSkills.length || p.skills.some((s) => selectedSkills.some((sel) => sel.toLowerCase() === s.toLowerCase())))
       .filter((p) => !selectedRole || p.preferred_role.toLowerCase() === selectedRole.toLowerCase())
       .filter((p) => !selectedLevel || p.experience_level === selectedLevel)
       .filter((p) => !showLikedYou || likesReceived.includes(p.user_id));
-  }, [profiles, likesSent, passedProfiles, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
+  }, [profiles, likesSent, passedUserIds, matchedUserIds, selectedSkills, selectedRole, selectedLevel, showLikedYou, likesReceived]);
 
   const currentProfile = filteredProfiles[0] || null;
 
@@ -114,14 +155,13 @@ const Discovery = () => {
       if (direction === "right") {
         likeMutation.mutate(currentProfile.user_id);
       } else {
-        setPassedProfiles((prev) => [...prev, currentProfile.user_id]);
+        passMutation.mutate(currentProfile.user_id);
       }
       setSwipeDirection(null);
       setDragOffset(0);
     }, 300);
   };
 
-  // Touch / mouse handlers for swipe gestures
   const onPointerDown = (e: React.PointerEvent) => {
     isDragging.current = true;
     startX.current = e.clientX;
@@ -232,7 +272,6 @@ const Discovery = () => {
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
           >
-            {/* Swipe indicators */}
             {swipeIndicator === "like" && (
               <div className="absolute top-6 left-6 z-20 border-4 border-green-500 text-green-500 rounded-xl px-4 py-2 font-bold text-2xl rotate-[-15deg] opacity-80">
                 LIKE
@@ -253,7 +292,8 @@ const Discovery = () => {
           </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-muted-foreground">No more profiles. Try adjusting filters!</p>
+            <p className="text-muted-foreground text-lg font-medium">No more profiles available</p>
+            <p className="text-sm text-muted-foreground mt-2">Check back later for new users!</p>
           </div>
         )}
       </div>
