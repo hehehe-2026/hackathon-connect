@@ -198,7 +198,14 @@ const Profile = () => {
           <div>
             <Label className="text-sm text-muted-foreground">Preferred Role</Label>
             {editing ? (
-              <Input value={form.preferred_role} onChange={(e) => update("preferred_role", e.target.value)} className="mt-1 rounded-xl bg-secondary border-border text-sm" />
+              <>
+                <Input value={form.preferred_role} onChange={(e) => update("preferred_role", e.target.value)} className="mt-1 rounded-xl bg-secondary border-border text-sm" />
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {suggestedRoles.filter((r) => r.toLowerCase() !== form.preferred_role.toLowerCase()).slice(0, 6).map((r) => (
+                    <Badge key={r} variant="outline" className="text-xs cursor-pointer hover:bg-primary/20 transition-colors" onClick={() => update("preferred_role", r)}>+ {r}</Badge>
+                  ))}
+                </div>
+              </>
             ) : (
               <p className="text-sm text-primary font-medium mt-1">{form.preferred_role || "Set your role"}</p>
             )}
